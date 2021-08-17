@@ -2,7 +2,7 @@ import sys, fitz
 import os
 import datetime
  
-def pyMuPDF_fitz(pdfPath, imagePath):
+def pyMuPDF_fitz(pdfPath, imagePath,upscale=2):
     startTime_pdf2img = datetime.datetime.now()#开始时间
     
     print("imagePath="+imagePath)
@@ -12,21 +12,24 @@ def pyMuPDF_fitz(pdfPath, imagePath):
         rotate = int(0)
         # 每个尺寸的缩放系数为1.3，这将为我们生成分辨率提高2.6的图像。
         # 此处若是不做设置，默认图片大小为：792X612, dpi=96
-        zoom_x = 1.33333333*2 #(1.33333333-->1056x816)   (2-->1584x1224)
-        zoom_y = 1.33333333*2
+        zoom_x = 1.33333333*upscale #(1.33333333-->1056x816)   (2-->1584x1224)
+        zoom_y = 1.33333333*upscale
         mat = fitz.Matrix(zoom_x, zoom_y).preRotate(rotate)
         pix = page.getPixmap(matrix=mat, alpha=False)
         
         if not os.path.exists(imagePath):#判断存放图片的文件夹是否存在
             os.makedirs(imagePath) # 若图片文件夹不存在就创建
         
-        pix.writePNG(imagePath+'/'+'%s.png' % pg)#将图片写入指定的文件夹内
+        pix.writePNG(imagePath+'/'+'images_%s.png' % pg)#将图片写入指定的文件夹内
         
     endTime_pdf2img = datetime.datetime.now()#结束时间
     print('pdf2img时间=',(endTime_pdf2img - startTime_pdf2img).seconds,'s')
-
+    
+    
 if __name__ == "__main__":
-    homeworkname=input('输入文件名：')
-    pdfPath = homeworkname+'.pdf'
-    imagePath = homeworkname+'/'
-    pyMuPDF_fitz(pdfPath, imagePath)
+    homeworkname = input("Print File Name:")
+    upscale = float(input("Define upscale ratio:"))
+    #homeworkname='STSR'
+    pdfPath = './'+homeworkname+'.pdf'
+    imagePath = './'+homeworkname+'/'
+    pyMuPDF_fitz(pdfPath, imagePath,upscale)
